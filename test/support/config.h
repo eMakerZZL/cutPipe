@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define PI (3.1415926f)
+#define PI (3.141592654f)
 #define UNIT_RAD (PI / 180)
 #define UNIT_ARC_LENGTH (0.1f)
 
@@ -27,6 +27,9 @@ typedef struct LaserCutPipePara {
             float radius;
             float unit_radian;
             float unit_arc_length;
+            float center_x;
+            float center_y;
+            float center_z;
             int   segment;
         } circle_pipe_param;
         struct{
@@ -42,9 +45,6 @@ typedef struct LaserCutPipePara {
     float laser_deltaTime;
     float laser_holdTime;
 
-    float laser_pos_x;
-    float laser_pos_y;
-    float laser_pos_z;
     float laser_angle_x;
     float laser_angle_y;
     float laser_angle_z;
@@ -57,6 +57,10 @@ typedef struct LaserCutPipePara {
     float guide_arc_radius;
     float guide_arc_length;
     int   is_default_enalbe_guide_line;
+
+    float start_point_x;
+    float start_point_y;
+    float start_point_z;
 }LaserCutPipePara;
 
 LaserCutPipePara* init_LaserCutPipePara(void);
@@ -65,4 +69,5 @@ float* CirclePipe_GenerateLaserTrail(float center, float radius_mm);
 float* CirclePipe_GenerateCutTrail(void);
 float* CirclePipe_ConvertAixsYToAngle(void);
 float* CirclePipe_RestoreAxisZCoordVal(void);
+float* GuideLine_GenerateArc(float arc_radius_mm, float arc_length_mm, int guideLine_Type);
 #endif /* end of include guard: CONFIG_H */
