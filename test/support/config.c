@@ -214,7 +214,7 @@ float* CirclePipe_RestoreAxisZCoordVal(void)
 
 static void GuideLine_arc_rotate(float pos_vector[4], const float center_vector[3], const float guide_arc_radius_mm)
 {
-    rotate_s(pos_vector, center_vector, rotate_y, -PI / 2);
+    rotate_s(pos_vector, center_vector, rotate_y, PI);
 
     pos_vector[0] += 2 * guide_arc_radius_mm;
 }

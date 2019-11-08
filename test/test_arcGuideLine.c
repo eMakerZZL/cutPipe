@@ -54,3 +54,25 @@ void test_arcGuideLine_checkGuideLineArcOutOk(void)
         TEST_ASSERT_FLOAT_WITHIN(0.001, guilde_line_arc_out_buf[i * VECTOR_DIMENSION + 2], *(guideLine_arc_out + i * MATRIX_DIMENSION + 2));
     }
 }
+
+void test_arcGuideLine_checkOutterGuideLineArcInOk(void)
+{
+    GuideLine_GenerateArc(laserParam->circle_pipe_param.radius / 4, 5, GUIDELINE_TYPE_OUTTER);
+
+    for (int i = 0; i < 201; i++) {
+        TEST_ASSERT_FLOAT_WITHIN(0.001, guilde_line_arc_in_buf_outter[i * VECTOR_DIMENSION + 0], *(guideLine_arc_in + i * MATRIX_DIMENSION + 0));
+        TEST_ASSERT_FLOAT_WITHIN(0.001, guilde_line_arc_in_buf_outter[i * VECTOR_DIMENSION + 1], *(guideLine_arc_in + i * MATRIX_DIMENSION + 1));
+        TEST_ASSERT_FLOAT_WITHIN(0.001, guilde_line_arc_in_buf_outter[i * VECTOR_DIMENSION + 2], *(guideLine_arc_in + i * MATRIX_DIMENSION + 2));
+    }
+}
+
+void test_arcGuideLine_checkOutterGuideLineArcOutOk(void)
+{
+    GuideLine_GenerateArc(laserParam->circle_pipe_param.radius / 4, 5, GUIDELINE_TYPE_OUTTER);
+
+    for (int i = 0; i < 201; i++) {
+        TEST_ASSERT_FLOAT_WITHIN(0.001, guilde_line_arc_out_buf_outter[i * VECTOR_DIMENSION + 0], *(guideLine_arc_out + i * MATRIX_DIMENSION + 0));
+        TEST_ASSERT_FLOAT_WITHIN(0.001, guilde_line_arc_out_buf_outter[i * VECTOR_DIMENSION + 1], *(guideLine_arc_out + i * MATRIX_DIMENSION + 1));
+        TEST_ASSERT_FLOAT_WITHIN(0.001, guilde_line_arc_out_buf_outter[i * VECTOR_DIMENSION + 2], *(guideLine_arc_out + i * MATRIX_DIMENSION + 2));
+    }
+}
