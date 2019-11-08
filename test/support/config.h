@@ -65,6 +65,9 @@ typedef struct LaserCutPipePara {
 
 LaserCutPipePara* init_LaserCutPipePara(void);
 void destory_LaserCutPipePara(void);
+float* get_GuideLineArcIn_addr(void);
+float* get_GuideLineArcOut_addr(void);
+
 float* CirclePipe_GenerateLaserTrail(float center, float radius_mm);
 float* CirclePipe_GenerateCutTrail(void);
 float* CirclePipe_ConvertAixsYToAngle(void);

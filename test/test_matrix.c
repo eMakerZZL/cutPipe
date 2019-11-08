@@ -106,7 +106,7 @@ void test_matrix_rotatex_pos2des(void)
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(des_vector, pos_vector, 4);
 }
 
-void test_matrix_rotatey_pos2des(void) 
+void test_matrix_rotatey_pos2des(void)
 {
     float pos_vector[4] = { 10, 10, 10, 1 };
     float des_vector[4] = { 13.6602540378444, 10, 3.66025403784439, 1 };
@@ -115,7 +115,7 @@ void test_matrix_rotatey_pos2des(void)
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(des_vector, pos_vector, 4);
 }
 
-void test_matrix_rotatez_pos2des(void) 
+void test_matrix_rotatez_pos2des(void)
 {
     float pos_vector[4] = { 10, 10, 10, 1 };
     float des_vector[4] = { 13.6602540378444, 3.66025403784439, 10, 1 };
@@ -130,6 +130,6 @@ void test_matrix_rotates_pos2des(void)
     float des_vector[4] = { 10, 10, 10, 1 };
     float center_vector[3] = {10, 10, 10};
 
-    rotate_s(pos_vector, center_vector, PI / 6, rotate_x);
+    rotate_s(pos_vector, center_vector,  rotate_x, PI / 6);
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(des_vector, pos_vector, 4);
 }
