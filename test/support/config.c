@@ -232,11 +232,12 @@ float* GuideLine_GenerateArc(float arc_radius_mm, float arc_length_mm, int guide
     float guide_line_center_z = laserCutPipePara->start_point_z;
     float guide_line_radian = arc_length_mm / arc_radius_mm;
     float guide_line_center_vector[3] = { guide_line_center_x, guide_line_center_y, guide_line_center_z };
+    float end_theta = 2 * PI - guide_line_radian;
     float theta;
     int i;
 
     /**
-     * @brief   引入线方向theta --> 0
+     * @brief   引入线方向theta --> 0 逆时针
      */
     theta = guide_line_radian;
     i = 0;
@@ -257,18 +258,18 @@ float* GuideLine_GenerateArc(float arc_radius_mm, float arc_length_mm, int guide
     }
 
     /**
-     * @brief   引出线方向theta --> 0
+     * @brief   引出线方向theta --> 0 顺时针
      */
-    theta = 2 * PI - guide_line_radian;
+    theta = 2 * PI;
     i = 0;
-    while (theta <= 2 * PI) {
+    while (theta >= end_theta) {
         COORDINATE_VALUE_ASSIGNMENT(guideLine_arc_out);
-        theta += laserCutPipePara->circle_pipe_param.unit_radian;
+        theta -= laserCutPipePara->circle_pipe_param.unit_radian;
         i++;
     }
-    if (theta - laserCutPipePara->circle_pipe_param.unit_radian < 2 * PI)
+    if (theta + laserCutPipePara->circle_pipe_param.unit_radian > end_theta)
     {
-        theta = 2 * PI;
+        theta = end_theta;
         COORDINATE_VALUE_ASSIGNMENT(guideLine_arc_out);
         i++;
     }
