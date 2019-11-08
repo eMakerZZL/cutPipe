@@ -11,5 +11,7 @@ extern const float guilde_line_arc_in_buf[];
 extern const float guilde_line_arc_out_buf[];
 extern const float guilde_line_arc_in_buf_outter[];
 extern const float guilde_line_arc_out_buf_outter[];
+extern const float guilde_line_arc_in_cut_buf_outter[];
+extern const float guilde_line_arc_out_cut_buf_outter[];
 
 #endif /* end of include guard: DATA_H */

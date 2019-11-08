@@ -53,9 +53,13 @@ typedef struct LaserCutPipePara {
 
     float guide_line_angle;
     float guide_line_length;
+    int   guide_line_segment;
 
     float guide_arc_radius;
     float guide_arc_length;
+    int   guide_arc_in_segment;
+    int   guide_arc_out_segment;
+
     int   is_default_enalbe_guide_line;
 
     float start_point_x;
@@ -67,10 +71,13 @@ LaserCutPipePara* init_LaserCutPipePara(void);
 void destory_LaserCutPipePara(void);
 float* get_GuideLineArcIn_addr(void);
 float* get_GuideLineArcOut_addr(void);
+float* get_GuideLineArcIn_CutTrail_addr(void);
+float* get_GuideLineArcOut_CutTrail_addr(void);
 
 float* CirclePipe_GenerateLaserTrail(float center, float radius_mm);
 float* CirclePipe_GenerateCutTrail(void);
 float* CirclePipe_ConvertAixsYToAngle(void);
 float* CirclePipe_RestoreAxisZCoordVal(void);
-float* GuideLine_GenerateArc(float arc_radius_mm, float arc_length_mm, int guideLine_Type);
+void GuideLine_GenerateArc(float arc_radius_mm, float arc_length_mm, int guideLine_Type);
+void GuideLine_GenerateCutTrail(void);
 #endif /* end of include guard: CONFIG_H */
