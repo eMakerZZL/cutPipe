@@ -26,6 +26,8 @@ static void LaserCutPipe_SetCirclePipeParam(float pipe_radius_mm, float unit_arc
     laserCutPipePara->circle_pipe_param.unit_arc_length = unit_arc_length_mm >= UNIT_ARC_LENGTH ? unit_arc_length_mm : UNIT_ARC_LENGTH;
     laserCutPipePara->circle_pipe_param.unit_radian = laserCutPipePara->circle_pipe_param.unit_arc_length / laserCutPipePara->circle_pipe_param.radius;
 
+
+    /* TODO:  可修改成linsapce形式,同时计算控制卡能够识别的直线最短距离<08-11-19, yourname> */
     float count = 2 * PI / laserCutPipePara->circle_pipe_param.unit_radian;
     int icount = (int)(count + 0.5);
     laserCutPipePara->circle_pipe_param.segment = icount;
@@ -198,14 +200,9 @@ float* CirclePipe_RestoreAxisZCoordVal(void)
     return cut_trail;
 }
 
-static void GuideLine_arc_rotate(float pos_vector[4], float guide_arc_radius_mm)
+static void GuideLine_arc_rotate(float pos_vector[4], const float center_vector[3], const float guide_arc_radius_mm)
 {
-    float guide_line_center_x = laserCutPipePara->start_point_x - guide_arc_radius_mm;
-    float guide_line_center_y = laserCutPipePara->start_point_y;
-    float guide_line_center_z = laserCutPipePara->start_point_z;
-    float guide_line_center_vector[3] = { guide_line_center_x, guide_line_center_y, guide_line_center_z };
-
-    rotate_s(pos_vector, guide_line_center_vector, -PI / 2, rotate_y);
+    rotate_s(pos_vector, center_vector, rotate_y, -PI / 2);
 
     pos_vector[0] += 2 * guide_arc_radius_mm;
 }
@@ -216,6 +213,7 @@ float* GuideLine_GenerateArc(float arc_radius_mm, float arc_length_mm, int guide
     float guide_line_center_y = laserCutPipePara->start_point_y;
     float guide_line_center_z = laserCutPipePara->start_point_z;
     float guide_line_radian = arc_length_mm / arc_radius_mm;
+    float guide_line_center_vector[3] = { guide_line_center_x, guide_line_center_y, guide_line_center_z };
     float theta;
     int i;
 
@@ -234,7 +232,7 @@ float* GuideLine_GenerateArc(float arc_radius_mm, float arc_length_mm, int guide
     }
     if (guideLine_Type == GUIDELINE_TYPE_OUTTER) {
         for (int j = 0; j < i; j++)
-            GuideLine_arc_rotate(guideLine_arc_in + j * MATRIX_DIMENSION, arc_radius_mm);
+            GuideLine_arc_rotate(guideLine_arc_in + j * MATRIX_DIMENSION, guide_line_center_vector, arc_radius_mm);
     }
 
     /**
@@ -252,7 +250,7 @@ float* GuideLine_GenerateArc(float arc_radius_mm, float arc_length_mm, int guide
     }
     if (guideLine_Type == GUIDELINE_TYPE_OUTTER) {
         for (int j = 0; j < i; j++)
-            GuideLine_arc_rotate(guideLine_arc_out + j * MATRIX_DIMENSION, arc_radius_mm);
+            GuideLine_arc_rotate(guideLine_arc_out + j * MATRIX_DIMENSION, guide_line_center_vector, arc_radius_mm);
     }
 }
 

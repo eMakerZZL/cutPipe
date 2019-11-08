@@ -77,7 +77,7 @@ void rotate_z(float pos_vector[4],float radian)
     matrix_multiply(mat, pos_vector);
 }
 
-void rotate_s(float pos_vector[4], const float center_vector[3], float radian,void(*rotate)(float pos_vector[4], float radian))
+void rotate_s(float pos_vector[4], const float center_vector[3], void(*rotate)(float pos_vector[4], float radian), float radian)
 {
     parallel(pos_vector, -center_vector[0], -center_vector[1], -center_vector[2]);
 

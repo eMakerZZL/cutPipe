@@ -1,5 +1,6 @@
 #include "circlePipe.h"
 #include "config.h"
+#include "matrix.h"
 #include "data.h"
 #include "unity.h"
 #include <stdlib.h>
