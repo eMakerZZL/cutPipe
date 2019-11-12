@@ -54,7 +54,8 @@ LaserCutPipePara* init_LaserCutPipePara(void)
     laserCutPipePara = (LaserCutPipePara*)calloc(1, sizeof(LaserCutPipePara));
     assert(laserCutPipePara);
 
-    laserCutPipePara->pipe = circlePipe;
+    laserCutPipePara->pipe_type = circle_pipe;
+    laserCutPipePara->guide_line_type = arc_guide_line;
     laserCutPipePara->pipe_length = 20.0f;
     LaserCutPipe_SetCirclePipeParam(10.0f, 0.1f);
     LaserCutPipe_SetLaserPosition();
@@ -251,6 +252,15 @@ float* CirclePipe_GenerateCutTrail(void)
     return cut_trail;
 }
 
+static void GuideLine_CalculateCutTrail(float* cut_trail_buf, float* ori_trail_buf, const int segments)
+{
+    for (int i = 0; i < segments; i++) {
+        *(cut_trail_buf + i * VECTOR_DIMENSION + 0) = *(ori_trail_buf + i * MATRIX_DIMENSION + 0);
+        *(cut_trail_buf + i * VECTOR_DIMENSION + 1) = *(ori_trail_buf + i * MATRIX_DIMENSION + 1);
+        *(cut_trail_buf + i * VECTOR_DIMENSION + 2) = sqrt(pow(laserCutPipePara->circle_pipe_param.radius, 2) - pow(*(cut_trail_buf + VECTOR_DIMENSION * i + 1), 2));
+    }
+}
+
 void GuideLine_GenerateCutTrail(void)
 {
     assert(laserCutPipePara);
@@ -259,16 +269,12 @@ void GuideLine_GenerateCutTrail(void)
     assert(guideLine_arc_in_cut_trail);
     assert(guideLine_arc_out_cut_trail);
 
-    for (int i = 0; i < laserCutPipePara->guide_arc_in_segment; i++) {
-        *(guideLine_arc_in_cut_trail + i * VECTOR_DIMENSION + 0) = *(guideLine_arc_in + i * MATRIX_DIMENSION + 0);
-        *(guideLine_arc_in_cut_trail + i * VECTOR_DIMENSION + 1) = *(guideLine_arc_in + i * MATRIX_DIMENSION + 1);
-        *(guideLine_arc_in_cut_trail + i * VECTOR_DIMENSION + 2) = sqrt(pow(laserCutPipePara->circle_pipe_param.radius, 2) - pow(*(guideLine_arc_in_cut_trail + VECTOR_DIMENSION * i + 1), 2));
-    }
-
-    for (int i = 0; i < laserCutPipePara->guide_arc_out_segment; i++) {
-        *(guideLine_arc_out_cut_trail + i * VECTOR_DIMENSION + 0) = *(guideLine_arc_out + i * MATRIX_DIMENSION + 0);
-        *(guideLine_arc_out_cut_trail + i * VECTOR_DIMENSION + 1) = *(guideLine_arc_out + i * MATRIX_DIMENSION + 1);
-        *(guideLine_arc_out_cut_trail + i * VECTOR_DIMENSION + 2) = sqrt(pow(laserCutPipePara->circle_pipe_param.radius, 2) - pow(*(guideLine_arc_out_cut_trail + VECTOR_DIMENSION * i + 1), 2));
+    if (laserCutPipePara->guide_line_type == arc_guide_line) {
+        GuideLine_CalculateCutTrail(guideLine_arc_in_cut_trail, guideLine_arc_in, laserCutPipePara->guide_arc_in_segment);
+        GuideLine_CalculateCutTrail(guideLine_arc_out_cut_trail, guideLine_arc_out, laserCutPipePara->guide_arc_in_segment);
+    } else if (laserCutPipePara->guide_line_type == line_guide_line) {
+        GuideLine_CalculateCutTrail(guideLine_line_in_cut_trail, guideLine_line_in, laserCutPipePara->guide_line_segment);
+        GuideLine_CalculateCutTrail(guideLine_line_out_cut_trail, guideLine_line_out, laserCutPipePara->guide_line_segment);
     }
 }
 

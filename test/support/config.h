@@ -12,14 +12,22 @@
 
 #define GUIDELINE_TYPE_INNER  (0)
 #define GUIDELINE_TYPE_OUTTER (1)
+#define GUIDELINE_DIR_IN      (0)
+#define GUIDELINE_DIR_OUT     (1)
 
 typedef enum PipeType{
-    circlePipe,
-    squarePipe,
+    circle_pipe,
+    square_pipe,
 }PipeType;
 
+typedef enum GuideLineType{
+    arc_guide_line,
+    line_guide_line,
+}GuideLineType;
+
 typedef struct LaserCutPipePara {
-    PipeType pipe;
+    PipeType pipe_type;
+    GuideLineType guide_line_type;
     union{
         struct{
             float radius;
@@ -31,6 +39,7 @@ typedef struct LaserCutPipePara {
         struct{
             float length;
             float width;
+            float height;
         } square_pipe_param;
     };
     float pipe_length;

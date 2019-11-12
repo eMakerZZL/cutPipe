@@ -27,7 +27,6 @@ void test_circlePipe_laserUnitRadWasOk(void)
 
     TEST_ASSERT_EQUAL_FLOAT(0.01, laserParam->unit_radian);
     TEST_ASSERT_EQUAL_FLOAT(628, (int)(count + 0.5));
-
 }
 
 void test_circlePipe_laserTrailLessThanPipeRadius(void)

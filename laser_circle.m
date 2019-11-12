@@ -238,9 +238,11 @@ while guide_line_plan_length <= guide_line_length
 end
 guide_line = [guide_line_fx' guide_line_fy' guide_line_fz'];
 guide_line_out = flipud(guide_line);
- plot3(guide_line_fx,guide_line_fy,guide_line_fz,'ro');
+plot3(guide_line_fx,guide_line_fy,guide_line_fz,'ro');
 
 guide_line_cut_trail_x = guide_line_fx;
 guide_line_cut_trail_y = guide_line_fy;
 guide_line_cut_trail_z = sqrt(pipe_raidus^2 - guide_line_cut_trail_y.^2);
+guide_line_cut_trail = [guide_line_cut_trail_x' guide_line_cut_trail_y' guide_line_cut_trail_z'];
+guide_line_cut_out_trail = flipud(guide_line_cut_trail);
 plot3(guide_line_cut_trail_x,guide_line_cut_trail_y,guide_line_cut_trail_z,'r','LineWidth',5);
