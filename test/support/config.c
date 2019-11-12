@@ -27,11 +27,10 @@ static void LaserCutPipe_SetCirclePipeParam(float pipe_radius_mm, float unit_arc
     assert(laserCutPipePara);
 
     laserCutPipePara->circle_pipe_param.radius = pipe_radius_mm;
-    laserCutPipePara->circle_pipe_param.unit_arc_length = unit_arc_length_mm >= UNIT_ARC_LENGTH ? unit_arc_length_mm : UNIT_ARC_LENGTH;
-    laserCutPipePara->circle_pipe_param.unit_radian = laserCutPipePara->circle_pipe_param.unit_arc_length / laserCutPipePara->circle_pipe_param.radius;
+    laserCutPipePara->unit_arc_length = unit_arc_length_mm >= UNIT_ARC_LENGTH ? unit_arc_length_mm : UNIT_ARC_LENGTH;
+    laserCutPipePara->unit_radian = laserCutPipePara->unit_arc_length / laserCutPipePara->circle_pipe_param.radius;
 
-    /* TODO:  可修改成linsapce形式,同时计算控制卡能够识别的直线最短距离<08-11-19, yourname> */
-    float count = 2 * PI / laserCutPipePara->circle_pipe_param.unit_radian;
+    float count = 2 * PI / laserCutPipePara->unit_radian;
     int icount = (int)(count + 0.5);
     laserCutPipePara->circle_pipe_param.segment = icount;
 }
@@ -91,7 +90,6 @@ LaserCutPipePara* init_LaserCutPipePara(void)
 
     guideLine_line_out_cut_trail = (float*)calloc(laserCutPipePara->circle_pipe_param.segment * VECTOR_DIMENSION, sizeof(float));
     assert(guideLine_line_out_cut_trail);
-
 
     return laserCutPipePara;
 }
@@ -232,7 +230,7 @@ float* CirclePipe_GenerateLaserTrail(float center, float radius_mm)
         *(laser_trail + i * MATRIX_DIMENSION + 1) = laser_pos_y + radius_mm * sin(theta);
         *(laser_trail + i * MATRIX_DIMENSION + 2) = laser_pos_z;
         *(laser_trail + i * MATRIX_DIMENSION + 3) = 1;
-        theta += laserCutPipePara->circle_pipe_param.unit_radian;
+        theta += laserCutPipePara->unit_radian;
     }
 
     return laser_trail;
@@ -312,11 +310,11 @@ static void GuideLine_arc_rotate(float pos_vector[4], const float center_vector[
 
 void GuideLine_GenerateArc(float arc_radius_mm, float arc_length_mm, int guideLine_Type)
 {
-#define COORDINATE_VALUE_ASSIGNMENT(guide_line_arc) \
-        *(guide_line_arc + i * MATRIX_DIMENSION + 0) = guide_line_center_x + arc_radius_mm * cos(theta);\
-        *(guide_line_arc + i * MATRIX_DIMENSION + 1) = guide_line_center_y + arc_radius_mm * sin(theta);\
-        *(guide_line_arc + i * MATRIX_DIMENSION + 2) = guide_line_center_z;\
-        *(guide_line_arc + i * MATRIX_DIMENSION + 3) = 1
+#define COORDINATE_VALUE_ASSIGNMENT(guide_line_arc)                                                  \
+    *(guide_line_arc + i * MATRIX_DIMENSION + 0) = guide_line_center_x + arc_radius_mm * cos(theta); \
+    *(guide_line_arc + i * MATRIX_DIMENSION + 1) = guide_line_center_y + arc_radius_mm * sin(theta); \
+    *(guide_line_arc + i * MATRIX_DIMENSION + 2) = guide_line_center_z;                              \
+    *(guide_line_arc + i * MATRIX_DIMENSION + 3) = 1
 
     float guide_line_center_x = laserCutPipePara->start_point_x - arc_radius_mm;
     float guide_line_center_y = laserCutPipePara->start_point_y;
@@ -334,11 +332,10 @@ void GuideLine_GenerateArc(float arc_radius_mm, float arc_length_mm, int guideLi
     i = 0;
     while (theta >= 0) {
         COORDINATE_VALUE_ASSIGNMENT(guideLine_arc_in);
-        theta -= laserCutPipePara->circle_pipe_param.unit_radian;
+        theta -= laserCutPipePara->unit_radian;
         i++;
     }
-    if (theta + laserCutPipePara->circle_pipe_param.unit_radian > 0)
-    {
+    if (theta + laserCutPipePara->unit_radian > 0) {
         theta = 0;
         COORDINATE_VALUE_ASSIGNMENT(guideLine_arc_in);
         i++;
@@ -356,11 +353,10 @@ void GuideLine_GenerateArc(float arc_radius_mm, float arc_length_mm, int guideLi
     i = 0;
     while (theta >= end_theta) {
         COORDINATE_VALUE_ASSIGNMENT(guideLine_arc_out);
-        theta -= laserCutPipePara->circle_pipe_param.unit_radian;
+        theta -= laserCutPipePara->unit_radian;
         i++;
     }
-    if (theta + laserCutPipePara->circle_pipe_param.unit_radian > end_theta)
-    {
+    if (theta + laserCutPipePara->unit_radian > end_theta) {
         theta = end_theta;
         COORDINATE_VALUE_ASSIGNMENT(guideLine_arc_out);
         i++;
@@ -373,14 +369,12 @@ void GuideLine_GenerateArc(float arc_radius_mm, float arc_length_mm, int guideLi
 #undef COORDINATE_VALUE_ASSIGNMENT
 }
 
-void GuideLine_GenerateLine(float line_degree, float line_length_mm, int guideLine_Type)
+void GuideLine_GenerateLine(float line_degree, float line_length_mm)
 {
     float guide_line_start_x = laserCutPipePara->start_point_x;
     float guide_line_start_y = laserCutPipePara->start_point_y;
     float guide_line_start_z = laserCutPipePara->start_point_z;
-    float guide_line_radian  = line_degree * UNIT_RAD;
-    if (guideLine_Type == GUIDELINE_TYPE_INNER)
-        guide_line_radian = -guide_line_radian;
+    float guide_line_radian = line_degree * UNIT_RAD;
 
     float guide_line_xs = guide_line_start_x + line_length_mm * cos(guide_line_radian - PI / 2);
     float guide_line_ys = guide_line_start_y + line_length_mm * sin(guide_line_radian - PI / 2);
@@ -394,10 +388,9 @@ void GuideLine_GenerateLine(float line_degree, float line_length_mm, int guideLi
     int i = 0;
 
     float delta = 0.0f;
-    const float epsinon = laserCutPipePara->unit_line_length / 2;
+    const float epsinon = 0.001;
 
-    while (delta <= epsinon)
-    {
+    while (delta <= epsinon) {
         float t = plan_length / line_length_mm;
         *(guideLine_line_in + i * MATRIX_DIMENSION + 0) = (1 - t) * guide_line_xs + t * guide_line_xe;
         *(guideLine_line_in + i * MATRIX_DIMENSION + 1) = (1 - t) * guide_line_ys + t * guide_line_ye;
@@ -418,7 +411,7 @@ void GuideLine_GenerateLine(float line_degree, float line_length_mm, int guideLi
     laserCutPipePara->guide_line_segment = i;
 
     i -= 1;
-    for (int j = 0;i >= 0; j++,i--) {
+    for (int j = 0; i >= 0; j++, i--) {
         *(guideLine_line_out + j * MATRIX_DIMENSION + 0) = *(guideLine_line_in + i * MATRIX_DIMENSION + 0);
         *(guideLine_line_out + j * MATRIX_DIMENSION + 1) = *(guideLine_line_in + i * MATRIX_DIMENSION + 1);
         *(guideLine_line_out + j * MATRIX_DIMENSION + 2) = *(guideLine_line_in + i * MATRIX_DIMENSION + 2);

@@ -12,8 +12,6 @@
 
 #define GUIDELINE_TYPE_INNER  (0)
 #define GUIDELINE_TYPE_OUTTER (1)
-#define GUIDELINE_DIR_IN  (0)
-#define GUIDELINE_DIR_OUT (1)
 
 typedef enum PipeType{
     circlePipe,
@@ -25,8 +23,6 @@ typedef struct LaserCutPipePara {
     union{
         struct{
             float radius;
-            float unit_arc_length;
-            float unit_radian;
             float center_x;
             float center_y;
             float center_z;
@@ -38,6 +34,9 @@ typedef struct LaserCutPipePara {
         } square_pipe_param;
     };
     float pipe_length;
+    float unit_line_length;
+    float unit_arc_length;
+    float unit_radian;
 
     float laser_power;
     float laser_pwm;
@@ -51,7 +50,6 @@ typedef struct LaserCutPipePara {
     float laser_height;
     float laser_offset_center_distance;
 
-    float unit_line_length;
     float guide_line_angle;
     float guide_line_length;
     int   guide_line_segment;
@@ -60,8 +58,6 @@ typedef struct LaserCutPipePara {
     float guide_arc_length;
     int   guide_arc_in_segment;
     int   guide_arc_out_segment;
-
-    int   is_default_enalbe_guide_line;
 
     float start_point_x;
     float start_point_y;
@@ -87,5 +83,5 @@ float* CirclePipe_ConvertAixsYToAngle(void);
 float* CirclePipe_RestoreAxisZCoordVal(void);
 void GuideLine_GenerateArc(float arc_radius_mm, float arc_length_mm, int guideLine_Type);
 void GuideLine_GenerateCutTrail(void);
-void GuideLine_GenerateLine(float line_degree, float line_length_mm, int guideLine_Type);
+void GuideLine_GenerateLine(float line_degree, float line_length_mm);
 #endif /* end of include guard: CONFIG_H */

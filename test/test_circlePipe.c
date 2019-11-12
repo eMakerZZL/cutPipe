@@ -23,10 +23,11 @@ void tearDown(void)
 
 void test_circlePipe_laserUnitRadWasOk(void)
 {
-    float count = 2 * PI / laserParam->circle_pipe_param.unit_radian;
+    float count = 2 * PI / laserParam->unit_radian;
 
-    TEST_ASSERT_EQUAL_FLOAT(0.01, laserParam->circle_pipe_param.unit_radian);
+    TEST_ASSERT_EQUAL_FLOAT(0.01, laserParam->unit_radian);
     TEST_ASSERT_EQUAL_FLOAT(628, (int)(count + 0.5));
+
 }
 
 void test_circlePipe_laserTrailLessThanPipeRadius(void)

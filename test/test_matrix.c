@@ -104,6 +104,7 @@ void test_matrix_rotatex_pos2des(void)
 
     rotate_x(pos_vector, PI / 6);
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(des_vector, pos_vector, 4);
+
 }
 
 void test_matrix_rotatey_pos2des(void)

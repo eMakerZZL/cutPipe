@@ -66,6 +66,7 @@ void test_arcGuideLine_checkGuideLineArcOutOk(void)
         TEST_ASSERT_FLOAT_WITHIN(MAXMUL_DELTA, guilde_line_arc_out_buf[i * VECTOR_DIMENSION + 1], *(guideLine_arc_out + i * MATRIX_DIMENSION + 1));
         TEST_ASSERT_FLOAT_WITHIN(MAXMUL_DELTA, guilde_line_arc_out_buf[i * VECTOR_DIMENSION + 2], *(guideLine_arc_out + i * MATRIX_DIMENSION + 2));
     }
+
 }
 
 void test_arcGuideLine_checkOutterGuideLineArcInOk(void)

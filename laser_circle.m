@@ -60,7 +60,7 @@ pipe_y = cylinder_x;
 pipe_z = cylinder_y;
 
 %draw pipe
-mesh(pipe_x, pipe_y, pipe_z);
+%mesh(pipe_x, pipe_y, pipe_z);
 
 %laser working point is half pipe x length
 % laser_working_point_x = pipe_length / 2;
@@ -232,8 +232,7 @@ while guide_line_plan_length <= guide_line_length
     guide_line_delta = guide_line_plan_length / guide_line_length;
     guide_line_fx(1,count) = (1 - guide_line_delta) .* guide_line_xs + guide_line_delta .* guide_line_xe;
     guide_line_fy(1,count) = (1 - guide_line_delta) .* guide_line_ys + guide_line_delta .* guide_line_ye;
-%     guide_line_fz = ones(1,guide_line_col) .* guide_line_ze;
-    guide_line_fz(1,count)  =  guide_line_ze;
+    guide_line_fz(1,count) =  guide_line_ze;
     guide_line_plan_length = guide_line_plan_length + guide_line_unit_line;
     count = count + 1;
 end
