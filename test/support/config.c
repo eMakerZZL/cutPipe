@@ -4,17 +4,9 @@
 #include <math.h>
 #include <stdlib.h>
 
+#define TRAIL_DATA_SIZE (100 * 1024 * 1024)
+
 static LaserCutPipePara* laserCutPipePara = NULL;
-static float* laser_trail = NULL;
-static float* cut_trail = NULL;
-static float* guideLine_arc_in = NULL;
-static float* guideLine_arc_out = NULL;
-static float* guideLine_line_in = NULL;
-static float* guideLine_line_out = NULL;
-static float* guideLine_arc_in_cut_trail = NULL;
-static float* guideLine_arc_out_cut_trail = NULL;
-static float* guideLine_line_in_cut_trail = NULL;
-static float* guideLine_line_out_cut_trail = NULL;
 
 /**
  * @brief   LaserCutPipe_SetCirclePipeParam 设置母管参数
@@ -62,35 +54,10 @@ LaserCutPipePara* init_LaserCutPipePara(void)
 
     laserCutPipePara->unit_line_length = 0.1;
 
-    laser_trail = (float*)calloc(laserCutPipePara->circle_pipe_param.segment * MATRIX_DIMENSION, sizeof(float));
-    assert(laser_trail);
+    laserCutPipePara->base_addr = (float*)calloc(1, sizeof(char) * TRAIL_DATA_SIZE);
+    assert(laserCutPipePara->base_addr);
 
-    guideLine_arc_in = (float*)calloc(laserCutPipePara->circle_pipe_param.segment * MATRIX_DIMENSION, sizeof(float));
-    assert(guideLine_arc_in);
-
-    guideLine_arc_out = (float*)calloc(laserCutPipePara->circle_pipe_param.segment * MATRIX_DIMENSION, sizeof(float));
-    assert(guideLine_arc_out);
-
-    guideLine_line_in = (float*)calloc(laserCutPipePara->circle_pipe_param.segment * MATRIX_DIMENSION, sizeof(float));
-    assert(guideLine_line_in);
-
-    guideLine_line_out = (float*)calloc(laserCutPipePara->circle_pipe_param.segment * MATRIX_DIMENSION, sizeof(float));
-    assert(guideLine_line_out);
-
-    cut_trail = (float*)calloc(laserCutPipePara->circle_pipe_param.segment * VECTOR_DIMENSION, sizeof(float));
-    assert(cut_trail);
-
-    guideLine_arc_in_cut_trail = (float*)calloc(laserCutPipePara->circle_pipe_param.segment * VECTOR_DIMENSION, sizeof(float));
-    assert(guideLine_arc_in_cut_trail);
-
-    guideLine_arc_out_cut_trail = (float*)calloc(laserCutPipePara->circle_pipe_param.segment * VECTOR_DIMENSION, sizeof(float));
-    assert(guideLine_arc_out_cut_trail);
-
-    guideLine_line_in_cut_trail = (float*)calloc(laserCutPipePara->circle_pipe_param.segment * VECTOR_DIMENSION, sizeof(float));
-    assert(guideLine_line_in_cut_trail);
-
-    guideLine_line_out_cut_trail = (float*)calloc(laserCutPipePara->circle_pipe_param.segment * VECTOR_DIMENSION, sizeof(float));
-    assert(guideLine_line_out_cut_trail);
+    laserCutPipePara->write_addr = laserCutPipePara->base_addr;
 
     return laserCutPipePara;
 }
@@ -98,96 +65,14 @@ LaserCutPipePara* init_LaserCutPipePara(void)
 void destory_LaserCutPipePara(void)
 {
     assert(laserCutPipePara);
+    assert(laserCutPipePara->base_addr);
+
+    free(laserCutPipePara->base_addr);
+    laserCutPipePara->base_addr = NULL;
+    laserCutPipePara->write_addr = NULL;
+
     free(laserCutPipePara);
     laserCutPipePara = NULL;
-
-    assert(laser_trail);
-    free(laser_trail);
-    laser_trail = NULL;
-
-    assert(cut_trail);
-    free(cut_trail);
-    cut_trail = NULL;
-
-    assert(guideLine_arc_in);
-    free(guideLine_arc_in);
-    guideLine_arc_in = NULL;
-
-    assert(guideLine_arc_out);
-    free(guideLine_arc_out);
-    guideLine_arc_out = NULL;
-
-    assert(guideLine_line_in);
-    free(guideLine_line_in);
-    guideLine_line_in = NULL;
-
-    assert(guideLine_line_out);
-    free(guideLine_line_out);
-    guideLine_line_out = NULL;
-
-    assert(guideLine_arc_in_cut_trail);
-    free(guideLine_arc_in_cut_trail);
-    guideLine_arc_in = NULL;
-
-    assert(guideLine_arc_out_cut_trail);
-    free(guideLine_arc_out_cut_trail);
-    guideLine_arc_out = NULL;
-
-    assert(guideLine_line_in_cut_trail);
-    free(guideLine_line_in_cut_trail);
-    guideLine_line_in = NULL;
-
-    assert(guideLine_line_out_cut_trail);
-    free(guideLine_line_out_cut_trail);
-    guideLine_line_out = NULL;
-}
-
-float* get_GuideLineArcIn_addr(void)
-{
-    assert(guideLine_arc_in);
-    return guideLine_arc_in;
-}
-
-float* get_GuideLineArcOut_addr(void)
-{
-    assert(guideLine_arc_out);
-    return guideLine_arc_out;
-}
-
-float* get_GuideLineIn_addr(void)
-{
-    assert(guideLine_line_in);
-    return guideLine_line_in;
-}
-
-float* get_GuideLineOut_addr(void)
-{
-    assert(guideLine_line_out);
-    return guideLine_line_out;
-}
-
-float* get_GuideLineArcIn_CutTrail_addr(void)
-{
-    assert(guideLine_arc_in_cut_trail);
-    return guideLine_arc_in_cut_trail;
-}
-
-float* get_GuideLineArcOut_CutTrail_addr(void)
-{
-    assert(guideLine_arc_out_cut_trail);
-    return guideLine_arc_out_cut_trail;
-}
-
-float* get_GuideLineIn_CutTrail_addr(void)
-{
-    assert(guideLine_line_in_cut_trail);
-    return guideLine_line_in_cut_trail;
-}
-
-float* get_GuideLineOut_CutTrail_addr(void)
-{
-    assert(guideLine_line_out_cut_trail);
-    return guideLine_line_out_cut_trail;
 }
 
 /**
@@ -200,21 +85,16 @@ float* get_GuideLineOut_CutTrail_addr(void)
  * @author  ZhangZL
  * @data    2019-11-05
  */
-float* CirclePipe_GenerateLaserTrail(float center, float radius_mm)
+void CirclePipe_GenerateLaserTrail(float center, float radius_mm)
 {
     assert(laserCutPipePara);
-    assert(laser_trail);
-    assert(cut_trail);
-
-    if (radius_mm > laserCutPipePara->circle_pipe_param.radius)
-        return NULL;
-
-    if (radius_mm <= 0)
-        return NULL;
 
     float laser_pos_x = center;
     float laser_pos_y = laserCutPipePara->laser_offset_center_distance;
     float laser_pos_z = laserCutPipePara->circle_pipe_param.radius + laserCutPipePara->laser_height;
+
+    float* laser_trail = laserCutPipePara->write_addr;
+    laserCutPipePara->laser_trail_addr = laser_trail;
 
     laserCutPipePara->circle_pipe_param.center_x = laser_pos_x;
     laserCutPipePara->circle_pipe_param.center_y = laser_pos_y;
@@ -234,77 +114,54 @@ float* CirclePipe_GenerateLaserTrail(float center, float radius_mm)
         theta += laserCutPipePara->unit_radian;
     }
 
-    return laser_trail;
+    laserCutPipePara->write_addr += (laserCutPipePara->circle_pipe_param.segment * MATRIX_DIMENSION);
 }
 
-float* CirclePipe_GenerateCutTrail(void)
+void CalculateCutTrail(float* trail_buf, const int segments)
 {
-    assert(laserCutPipePara);
-    assert(laser_trail);
-    assert(cut_trail);
-
-    for (int i = 0; i < laserCutPipePara->circle_pipe_param.segment; i++) {
-        *(cut_trail + i * VECTOR_DIMENSION + 0) = *(laser_trail + i * MATRIX_DIMENSION + 0);
-        *(cut_trail + i * VECTOR_DIMENSION + 1) = *(laser_trail + i * MATRIX_DIMENSION + 1);
-        *(cut_trail + i * VECTOR_DIMENSION + 2) = sqrt(pow(laserCutPipePara->circle_pipe_param.radius, 2) - pow(*(cut_trail + VECTOR_DIMENSION * i + 1), 2));
-    }
-
-    return cut_trail;
-}
-
-static void GuideLine_CalculateCutTrail(float* cut_trail_buf, float* ori_trail_buf, const int segments)
-{
-    for (int i = 0; i < segments; i++) {
-        *(cut_trail_buf + i * VECTOR_DIMENSION + 0) = *(ori_trail_buf + i * MATRIX_DIMENSION + 0);
-        *(cut_trail_buf + i * VECTOR_DIMENSION + 1) = *(ori_trail_buf + i * MATRIX_DIMENSION + 1);
-        *(cut_trail_buf + i * VECTOR_DIMENSION + 2) = sqrt(pow(laserCutPipePara->circle_pipe_param.radius, 2) - pow(*(cut_trail_buf + VECTOR_DIMENSION * i + 1), 2));
-    }
+    for (int i = 0; i < segments; i++)
+        *(trail_buf + i * MATRIX_DIMENSION + 2) = sqrt(pow(laserCutPipePara->circle_pipe_param.radius, 2) - pow(*(trail_buf + MATRIX_DIMENSION * i + 1), 2));
 }
 
 void GuideLine_GenerateCutTrail(void)
 {
     assert(laserCutPipePara);
-    assert(guideLine_arc_in);
-    assert(guideLine_arc_out);
-    assert(guideLine_arc_in_cut_trail);
-    assert(guideLine_arc_out_cut_trail);
+    assert(laserCutPipePara->guide_line_in_addr);
+    assert(laserCutPipePara->guide_line_out_addr);
 
     if (laserCutPipePara->guide_line_type == arc_guide_line) {
-        GuideLine_CalculateCutTrail(guideLine_arc_in_cut_trail, guideLine_arc_in, laserCutPipePara->guide_arc_in_segment);
-        GuideLine_CalculateCutTrail(guideLine_arc_out_cut_trail, guideLine_arc_out, laserCutPipePara->guide_arc_in_segment);
+        CalculateCutTrail(laserCutPipePara->guide_line_in_addr, laserCutPipePara->guide_arc_in_segment);
+        CalculateCutTrail(laserCutPipePara->guide_line_out_addr, laserCutPipePara->guide_arc_out_segment);
     } else if (laserCutPipePara->guide_line_type == line_guide_line) {
-        GuideLine_CalculateCutTrail(guideLine_line_in_cut_trail, guideLine_line_in, laserCutPipePara->guide_line_segment);
-        GuideLine_CalculateCutTrail(guideLine_line_out_cut_trail, guideLine_line_out, laserCutPipePara->guide_line_segment);
+        CalculateCutTrail(laserCutPipePara->guide_line_in_addr, laserCutPipePara->guide_line_segment);
+        CalculateCutTrail(laserCutPipePara->guide_line_out_addr, laserCutPipePara->guide_line_segment);
     }
 }
 
-float* CirclePipe_ConvertAixsYToAngle(void)
+void CirclePipe_ConvertAixsYToAngle(float* trail_buf, const int segments)
 {
     assert(laserCutPipePara);
-    assert(laser_trail);
-    assert(cut_trail);
 
     float y, radian, degree;
-    for (int i = 0; i < laserCutPipePara->circle_pipe_param.segment; i++) {
-        y = *(cut_trail + i * VECTOR_DIMENSION + 1);
+    float* laser_cut_trail = trail_buf;
+
+    for (int i = 0; i < segments; i++) {
+        y = *(laser_cut_trail + i * MATRIX_DIMENSION + 1);
         /**
          * @brief   不可使用atan求值,否则会造成角度突变
          */
         radian = acos(y / laserCutPipePara->circle_pipe_param.radius);
         degree = radian * 180 / PI;
-        *(cut_trail + i * VECTOR_DIMENSION + 1) = degree;
+        *(laser_cut_trail + i * MATRIX_DIMENSION + 1) = degree;
     }
-
-    return cut_trail;
 }
 
-float* CirclePipe_RestoreAxisZCoordVal(void)
+void CirclePipe_RestoreAxisZCoordVal(float* trail_buf, const int segments)
 {
-    for (int i = 0; i < laserCutPipePara->circle_pipe_param.segment; i++) {
-        *(cut_trail + i * VECTOR_DIMENSION + 2) = laserCutPipePara->circle_pipe_param.radius + laserCutPipePara->laser_height;
+    float* laser_cut_trail = trail_buf;
+    for (int i = 0; i < segments; i++) {
+        *(laser_cut_trail + i * MATRIX_DIMENSION + 2) = laserCutPipePara->circle_pipe_param.radius + laserCutPipePara->laser_height;
     }
-
-    return cut_trail;
 }
 
 static void GuideLine_arc_rotate(float pos_vector[4], const float center_vector[3], const float guide_arc_radius_mm)
@@ -331,9 +188,13 @@ void GuideLine_GenerateArc(float arc_radius_mm, float arc_length_mm, int guideLi
     float theta;
     int i;
 
+    float *guideLine_arc_in = NULL, *guideLine_arc_out = NULL;
     /**
      * @brief   引入线方向theta --> 0 逆时针
      */
+    guideLine_arc_in = laserCutPipePara->write_addr;
+    laserCutPipePara->guide_line_in_addr = guideLine_arc_in;
+
     theta = guide_line_radian;
     i = 0;
     while (theta >= 0) {
@@ -352,9 +213,14 @@ void GuideLine_GenerateArc(float arc_radius_mm, float arc_length_mm, int guideLi
     }
     laserCutPipePara->guide_arc_in_segment = i;
 
+    laserCutPipePara->write_addr += (laserCutPipePara->guide_arc_in_segment * MATRIX_DIMENSION);
+    guideLine_arc_in = NULL;
     /**
      * @brief   引出线方向theta --> 0 顺时针
      */
+    guideLine_arc_out = laserCutPipePara->write_addr;
+    laserCutPipePara->guide_line_out_addr = guideLine_arc_out;
+
     theta = 2 * PI;
     i = 0;
     while (theta >= end_theta) {
@@ -372,6 +238,9 @@ void GuideLine_GenerateArc(float arc_radius_mm, float arc_length_mm, int guideLi
             GuideLine_arc_rotate(guideLine_arc_out + j * MATRIX_DIMENSION, guide_line_center_vector, arc_radius_mm);
     }
     laserCutPipePara->guide_arc_out_segment = i;
+
+    laserCutPipePara->write_addr += (laserCutPipePara->guide_arc_out_segment * MATRIX_DIMENSION);
+    guideLine_arc_out = NULL;
 #undef COORDINATE_VALUE_ASSIGNMENT
 }
 
@@ -382,6 +251,10 @@ void GuideLine_GenerateLine(float line_degree, float line_length_mm)
     float guide_line_start_z = laserCutPipePara->start_point_z;
     float guide_line_radian = line_degree * UNIT_RAD;
 
+    /**
+     * @brief    guide_line_xs -> guide line x start
+     *           guide_line_xe -> guide line x end
+     */
     float guide_line_xs = guide_line_start_x + line_length_mm * cos(guide_line_radian - PI / 2);
     float guide_line_ys = guide_line_start_y + line_length_mm * sin(guide_line_radian - PI / 2);
     float guide_line_zs = guide_line_start_z;
@@ -396,6 +269,15 @@ void GuideLine_GenerateLine(float line_degree, float line_length_mm)
     float delta = 0.0f;
     const float epsinon = 0.001;
 
+    float *guideLine_line_in = NULL, *guideLine_line_out = NULL;
+
+    /**
+     * @brief   引入线
+     */
+    /**1.备份指针*/
+    guideLine_line_in = laserCutPipePara->write_addr;
+    laserCutPipePara->guide_line_in_addr = guideLine_line_in;
+    /**2.计算坐标*/
     while (delta <= epsinon) {
         float t = plan_length / line_length_mm;
         *(guideLine_line_in + i * MATRIX_DIMENSION + 0) = (1 - t) * guide_line_xs + t * guide_line_xe;
@@ -406,6 +288,7 @@ void GuideLine_GenerateLine(float line_degree, float line_length_mm)
         delta = plan_length - line_length_mm;
         i++;
     }
+    /**3.计算残余数据坐标*/
     delta = plan_length - laserCutPipePara->unit_line_length - line_length_mm;
     if (delta < -1 * epsinon) {
         *(guideLine_line_in + i * MATRIX_DIMENSION + 0) = guide_line_xe;
@@ -414,8 +297,20 @@ void GuideLine_GenerateLine(float line_degree, float line_length_mm)
         *(guideLine_line_in + i * MATRIX_DIMENSION + 3) = 1;
         i++;
     }
+    /**4.更新坐标数据点数量*/
     laserCutPipePara->guide_line_segment = i;
 
+    /**5.更新写指针*/
+    laserCutPipePara->write_addr += (laserCutPipePara->guide_line_segment * MATRIX_DIMENSION);
+
+    /**
+     * @brief   引出线
+     */
+    /**1.备份指针*/
+    guideLine_line_out = laserCutPipePara->write_addr;
+    laserCutPipePara->guide_line_out_addr = guideLine_line_out;
+
+    /**2.计算坐标值*/
     i -= 1;
     for (int j = 0; i >= 0; j++, i--) {
         *(guideLine_line_out + j * MATRIX_DIMENSION + 0) = *(guideLine_line_in + i * MATRIX_DIMENSION + 0);
@@ -423,4 +318,9 @@ void GuideLine_GenerateLine(float line_degree, float line_length_mm)
         *(guideLine_line_out + j * MATRIX_DIMENSION + 2) = *(guideLine_line_in + i * MATRIX_DIMENSION + 2);
         *(guideLine_line_out + j * MATRIX_DIMENSION + 3) = *(guideLine_line_in + i * MATRIX_DIMENSION + 3);
     }
+    /**3.更新写指针*/
+    laserCutPipePara->write_addr += (laserCutPipePara->guide_line_segment * MATRIX_DIMENSION);
+
+    guideLine_line_in = NULL;
+    guideLine_line_out = NULL;
 }
