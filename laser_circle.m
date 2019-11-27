@@ -30,8 +30,14 @@ rotate_z = @(theta)[
                     0           , 0          , 0 , 1;
                    ];
 
-pipe_length = 20;
-pipe_raidus = 10;
+parallel = @(x,y,z) [
+                        1, 0, 0, x;
+                        0, 1, 0, y;
+                        0, 0, 1, z;
+                        0, 0, 0, 1;
+                    ];
+pipe_length = 100;
+pipe_raidus = 20;
 
 unit_arc_length = 0.1;
 
@@ -60,8 +66,7 @@ pipe_y = cylinder_x;
 pipe_z = cylinder_y;
 
 %draw pipe
-%mesh(pipe_x, pipe_y, pipe_z);
-
+mesh(pipe_x, pipe_y, pipe_z);
 %laser working point is half pipe x length
 % laser_working_point_x = pipe_length / 2;
 % laser_offset_center_distance = 0;

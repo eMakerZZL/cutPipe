@@ -96,9 +96,9 @@ void CirclePipe_GenerateLaserTrail(float center, float radius_mm)
     float* laser_trail = laserCutPipePara->write_addr;
     laserCutPipePara->laser_trail_addr = laser_trail;
 
-    laserCutPipePara->circle_pipe_param.center_x = laser_pos_x;
-    laserCutPipePara->circle_pipe_param.center_y = laser_pos_y;
-    laserCutPipePara->circle_pipe_param.center_z = laser_pos_z;
+    /** laserCutPipePara->circle_pipe_param.center_x = laser_pos_x; */
+    /** laserCutPipePara->circle_pipe_param.center_y = laser_pos_y; */
+    /** laserCutPipePara->circle_pipe_param.center_z = laser_pos_z; */
 
     laserCutPipePara->start_point_x = laser_pos_x + radius_mm;
     laserCutPipePara->start_point_y = laser_pos_y;
