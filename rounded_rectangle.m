@@ -104,13 +104,22 @@ laser.trail_8 = zeros(segments,2);
 laser.trail_9 = zeros(segments,2);
 
 workpoints(1,1) = (rot_rectangle_points(1,1) + rot_rectangle_points(2,1)) / 2;
-workpoints(1,2) =  rot_rectangle_points(1,1);
+workpoints(1,2) =  rot_rectangle_points(1,2);
 
 laser.trail_1(:,1) = linspace(workpoints(1,1), rot_rectangle_points(2,1), segments);
 laser.trail_1(:,2) = workpoints(1,2) * ones(segments,1);
 
-laser.trail_2 = zeros(segments,2);
+handle_laser = plot(laser.trail_1(1,1), laser.trail_1(1,2), 'ro');
+for i = 1 : segments
+    set(handle_laser, 'xdata', laser.trail_1(i,1), 'ydata', laser.trail_1(i,2));
+    pause(0.01);
+end
 
+alpha = linspace(0, -pi / 2, segments);
+temp_arc = rot_arc_points.left_up;
+for i = 1 : segments
+    laser.trail_2(i,:) = rotate_coord(temp_arc(i,:), alpha(1,i));
+end
 
 alpha = -pi/ 2 / segments;
 rot_radians = alpha;
@@ -131,5 +140,8 @@ for i = 1 : segments
     set(handle_left_down , 'xdata', rot_arc_points.left_down(:,1) , 'ydata', rot_arc_points.left_down(:,2)  );
     set(handle_right_down, 'xdata', rot_arc_points.right_down(:,1), 'ydata', rot_arc_points.right_down(:,2) );
 
+    set(handle_laser, 'xdata', laser.trail_2(i,1), 'ydata', laser.trail_2(i,2));
+
     drawnow;
 end
+
