@@ -21,6 +21,11 @@ static void updata_reference_pos(float offset)
     pipe_limits->reference_abs += offset;
 }
 
+static unsigned int has_enough_length(float work_pos)
+{
+    return work_pos > pipe_limits->working_bound_abs ? 1 : 0;
+}
+
 void setUp(void)
 {
     pipe_limits = (pipe_limits_param*)malloc(sizeof(pipe_limits_param));
@@ -49,7 +54,11 @@ void test_pipe_length_MeetCutOrderUpdataReferencePos(void)
     TEST_ASSERT_EQUAL_FLOAT(40, pipe_limits->reference_abs);
 }
 
-void test_pipe_length_MeetCutOrderUpdataReferencePos(void)
+void test_pipe_length_CutPosGreatXPosFinishWork(void)
 {
+    float cutPos = 300;
 
+    updata_reference_pos(cutPos);
+
+    TEST_ASSERT_EQUAL_FLOAT(10, pipe_limits->reference_abs);
 }
