@@ -6,7 +6,7 @@ hold on;
 pipe.length = 30;
 pipe.width  = 15;
 pipe.height = 100;
-pipe.radius = 5;
+pipe.radius = 0;
 
 outter_rectangle.length = pipe.length; %Main Edge
 outter_rectangle.width  = pipe.width;
