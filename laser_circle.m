@@ -48,7 +48,7 @@ arc_guide_line_radians_length = 5;
 laser_working_point_x = pipe_length / 2;
 laser_offset_center_distance = 0;
 laser_up_lift_distance = 5;
-laser_circle_raduis = pipe_raidus / 2;
+laser_circle_raduis = pipe_raidus;
 
 unit_circle_center_angle = unit_arc_length / (pi/180 * pipe_raidus);
 unit_arc_rad = unit_circle_center_angle * pi / 180;
